@@ -49,6 +49,27 @@ public class ElectricVehicleDAO extends DBContext {
         return list;
     }
 
+    public List<ElectricVehicle> searchByBatteryType(String batteryType) {
+        List<ElectricVehicle> list = new ArrayList<>();
+        String sql = "SELECT * FROM ElectricVehicle WHERE BatteryType LIKE ?";
+        try {
+            PreparedStatement st = c.prepareStatement(sql);
+            st.setString(1, "%" + batteryType + "%");
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(new ElectricVehicle(
+                        rs.getString("VehicleID"),
+                        rs.getString("ModelName"),
+                        rs.getDouble("Price"),
+                        rs.getString("BatteryType")
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
+    }
+
     public void deleteVehicle(String vehicleID) {
         String sql = "DELETE FROM [dbo].[ElectricVehicle] WHERE [VehicleID] = ?";
         try {

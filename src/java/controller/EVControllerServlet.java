@@ -55,9 +55,18 @@ public class EVControllerServlet extends HttpServlet {
 
     private void listVehicles(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String batteryType = request.getParameter("batteryType");
         ElectricVehicleDAO dao = new ElectricVehicleDAO();
-        List<ElectricVehicle> list = dao.listAllVehicles();
+        List<ElectricVehicle> list;
+        
+        if (batteryType != null && !batteryType.trim().isEmpty()) {
+            list = dao.searchByBatteryType(batteryType.trim());
+        } else {
+            list = dao.listAllVehicles();
+        }
+        
         request.setAttribute("list", list);
+        request.setAttribute("searchedBatteryType", batteryType);
         request.getRequestDispatcher("ListEV.jsp").forward(request, response);
     }
 

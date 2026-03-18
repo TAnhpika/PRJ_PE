@@ -13,6 +13,14 @@
     </head>
     <body>
         <h1>Electric Vehicle List</h1>
+        
+        <form action="EVControllerServlet" method="GET" style="margin-bottom: 15px;">
+            <input type="hidden" name="service" value="list"/>
+            Search by Battery Type: 
+            <input type="text" name="batteryType" value="${requestScope.searchedBatteryType}"/>
+            <input type="submit" value="Search"/>
+        </form>
+
         <a href="EVControllerServlet?service=add">Add New Vehicle</a>
         <table>
             <thead>
