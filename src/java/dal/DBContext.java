@@ -11,7 +11,7 @@ public class DBContext {
     public DBContext() {
         try {
             // đổi databaseName
-            String url = "jdbc:sqlserver://localhost:1433;databaseName=EV_Workshop_Se1501;encrypt=true;trustServerCertificate=true";
+            String url = "jdbc:sqlserver://localhost:1433;databaseName=EV_Workshop_DE180882;encrypt=true;trustServerCertificate=true";
             String username = "sa";
             String pass = "123";
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -32,7 +32,12 @@ public class DBContext {
         }
     }
 
-//    public static void main(String[] args) {
-//        DBContext db = new DBContext();
-//    }
+    public static void main(String[] args) {
+        DBContext db = new DBContext();
+        if (db.c != null) {
+            System.out.println("Connection successful!");
+        } else {
+            System.out.println("Connection failed!");
+        }
+    }
 }

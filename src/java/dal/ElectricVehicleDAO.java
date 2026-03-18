@@ -1,7 +1,10 @@
 package dal;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.ElectricVehicle;
@@ -24,5 +27,25 @@ public class ElectricVehicleDAO extends DBContext {
         } catch (SQLException ex) {
             Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public List<ElectricVehicle> listAllVehicles() {
+        List<ElectricVehicle> list = new ArrayList<>();
+        String sql = "SELECT * FROM ElectricVehicle";
+        try {
+            PreparedStatement st = c.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(new ElectricVehicle(
+                        rs.getString("VehicleID"),
+                        rs.getString("ModelName"),
+                        rs.getDouble("Price"),
+                        rs.getString("BatteryType")
+                ));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return list;
     }
 }

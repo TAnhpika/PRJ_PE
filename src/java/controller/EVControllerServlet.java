@@ -1,18 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller;
 
+import dal.ElectricVehicleDAO;
 import java.io.IOException;
+import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.ElectricVehicle;
 
 /**
+ *
  * @author Anhpika 
  */
 @WebServlet(name="EVControllerServlet", urlPatterns={"/EVControllerServlet"})
@@ -21,12 +20,83 @@ public class EVControllerServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String service = request.getParameter("service");
+        if (service == null) {
+            service = "list";
+        }
 
+        switch (service) {
+            case "add":
+                request.getRequestDispatcher("AddEV.jsp").forward(request, response);
+                break;
+            case "list":
+            default:
+                listVehicles(request, response);
+                break;
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        String service = request.getParameter("service");
+        if ("add".equals(service)) {
+            addVehicle(request, response);
+        }
+    }
 
+    private void listVehicles(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        ElectricVehicleDAO dao = new ElectricVehicleDAO();
+        List<ElectricVehicle> list = dao.listAllVehicles();
+        request.setAttribute("list", list);
+        request.getRequestDispatcher("ListEV.jsp").forward(request, response);
+    }
+
+    private void addVehicle(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String vehicleID = request.getParameter("vehicleID");
+        String modelName = request.getParameter("modelName");
+        String priceStr = request.getParameter("price");
+        String batteryType = request.getParameter("batteryType");
+
+        boolean hasError = false;
+
+        if (vehicleID == null || vehicleID.trim().isEmpty()) {
+            request.setAttribute("error_vehicleID", "Vehicle ID is required.");
+            hasError = true;
+        }
+
+        if (modelName == null || modelName.trim().isEmpty()) {
+            request.setAttribute("error_modelName", "Model Name is required.");
+            hasError = true;
+        }
+
+        double price = 0;
+        if (priceStr == null || priceStr.trim().isEmpty()) {
+            request.setAttribute("error_price", "Price is required.");
+            hasError = true;
+        } else {
+            try {
+                price = Double.parseDouble(priceStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("error_price", "Price must be a numerical value.");
+                hasError = true;
+            }
+        }
+
+        if (batteryType == null || batteryType.trim().isEmpty()) {
+            request.setAttribute("error_batteryType", "Battery Type is required.");
+            hasError = true;
+        }
+
+        if (hasError) {
+            request.getRequestDispatcher("AddEV.jsp").forward(request, response);
+        } else {
+            ElectricVehicle ev = new ElectricVehicle(vehicleID, modelName, price, batteryType);
+            ElectricVehicleDAO dao = new ElectricVehicleDAO();
+            dao.addVehicle(ev);
+            response.sendRedirect("EVControllerServlet?service=list");
+        }
     }
 }
