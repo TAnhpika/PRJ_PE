@@ -10,6 +10,8 @@
     </head>
     <body>
         <h1>Add New Electric Vehicle</h1>
+        <a href="EVControllerServlet?service=list">Return To EV List</a>
+        <br/><br/>
         <form action="EVControllerServlet?service=add" method="POST">
             <div>
                 Vehicle ID: <input type="text" name="vehicleID" value="${param.vehicleID}"/>

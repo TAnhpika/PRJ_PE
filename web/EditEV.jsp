@@ -3,33 +3,32 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Add Electric Vehicle</title>
+        <title>Edit Electric Vehicle</title>
         <style>
             .error { color: red; font-size: 0.9em; }
         </style>
     </head>
     <body>
-        <h1>Add New Electric Vehicle</h1>
+        <h1>Edit Electric Vehicle</h1>
         <a href="EVControllerServlet?service=list">Return To EV List</a>
         <br/><br/>
-        <form action="EVControllerServlet?service=add" method="POST">
+        <form action="EVControllerServlet?service=update" method="POST">
             <div>
-                Vehicle ID: <input type="text" name="vehicleID" value="${param.vehicleID}"/>
-                <div class="error">${requestScope.error_vehicleID}</div>
+                Vehicle ID: <input type="text" name="vehicleID" value="${ev.vehicleID}" readonly="readonly"/>
             </div>
             <br/>
             <div>
-                Model Name: <input type="text" name="modelName" value="${param.modelName}"/>
+                Model Name: <input type="text" name="modelName" value="${ev.modelName}"/>
                 <div class="error">${requestScope.error_modelName}</div>
             </div>
             <br/>
             <div>
-                Price: <input type="text" name="price" value="${param.price}"/>
+                Price: <input type="text" name="price" value="${ev.price}"/>
                 <div class="error">${requestScope.error_price}</div>
             </div>
             <br/>
             <div>
-                Battery Type: <input type="text" name="batteryType" value="${param.batteryType}"/>
+                Battery Type: <input type="text" name="batteryType" value="${ev.batteryType}"/>
                 <div class="error">${requestScope.error_batteryType}</div>
             </div>
             <br/>

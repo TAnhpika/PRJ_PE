@@ -48,4 +48,49 @@ public class ElectricVehicleDAO extends DBContext {
         }
         return list;
     }
+
+    public void deleteVehicle(String vehicleID) {
+        String sql = "DELETE FROM [dbo].[ElectricVehicle] WHERE [VehicleID] = ?";
+        try {
+            PreparedStatement st = c.prepareStatement(sql);
+            st.setString(1, vehicleID);
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public ElectricVehicle getVehicleById(String vehicleID) {
+        String sql = "SELECT * FROM [dbo].[ElectricVehicle] WHERE [VehicleID] = ?";
+        try {
+            PreparedStatement st = c.prepareStatement(sql);
+            st.setString(1, vehicleID);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return new ElectricVehicle(
+                        rs.getString("VehicleID"),
+                        rs.getString("ModelName"),
+                        rs.getDouble("Price"),
+                        rs.getString("BatteryType")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void updateVehicle(ElectricVehicle ev) {
+        String sql = "UPDATE [dbo].[ElectricVehicle] SET [ModelName] = ?, [Price] = ?, [BatteryType] = ? WHERE [VehicleID] = ?";
+        try {
+            PreparedStatement st = c.prepareStatement(sql);
+            st.setString(1, ev.getModelName());
+            st.setDouble(2, ev.getPrice());
+            st.setString(3, ev.getBatteryType());
+            st.setString(4, ev.getVehicleID());
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ElectricVehicleDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

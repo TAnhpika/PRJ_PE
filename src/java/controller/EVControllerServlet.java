@@ -29,6 +29,12 @@ public class EVControllerServlet extends HttpServlet {
             case "add":
                 request.getRequestDispatcher("AddEV.jsp").forward(request, response);
                 break;
+            case "remove":
+                removeVehicle(request, response);
+                break;
+            case "edit":
+                loadEditPage(request, response);
+                break;
             case "list":
             default:
                 listVehicles(request, response);
@@ -42,6 +48,8 @@ public class EVControllerServlet extends HttpServlet {
         String service = request.getParameter("service");
         if ("add".equals(service)) {
             addVehicle(request, response);
+        } else if ("update".equals(service)) {
+            updateVehicle(request, response);
         }
     }
 
@@ -51,6 +59,23 @@ public class EVControllerServlet extends HttpServlet {
         List<ElectricVehicle> list = dao.listAllVehicles();
         request.setAttribute("list", list);
         request.getRequestDispatcher("ListEV.jsp").forward(request, response);
+    }
+
+    private void removeVehicle(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String id = request.getParameter("id");
+        ElectricVehicleDAO dao = new ElectricVehicleDAO();
+        dao.deleteVehicle(id);
+        response.sendRedirect("EVControllerServlet?service=list");
+    }
+
+    private void loadEditPage(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String id = request.getParameter("id");
+        ElectricVehicleDAO dao = new ElectricVehicleDAO();
+        ElectricVehicle ev = dao.getVehicleById(id);
+        request.setAttribute("ev", ev);
+        request.getRequestDispatcher("EditEV.jsp").forward(request, response);
     }
 
     private void addVehicle(HttpServletRequest request, HttpServletResponse response)
@@ -96,6 +121,51 @@ public class EVControllerServlet extends HttpServlet {
             ElectricVehicle ev = new ElectricVehicle(vehicleID, modelName, price, batteryType);
             ElectricVehicleDAO dao = new ElectricVehicleDAO();
             dao.addVehicle(ev);
+            response.sendRedirect("EVControllerServlet?service=list");
+        }
+    }
+
+    private void updateVehicle(HttpServletRequest request, HttpServletResponse response)
+    throws ServletException, IOException {
+        String vehicleID = request.getParameter("vehicleID"); // Readonly in edit
+        String modelName = request.getParameter("modelName");
+        String priceStr = request.getParameter("price");
+        String batteryType = request.getParameter("batteryType");
+
+        boolean hasError = false;
+
+        if (modelName == null || modelName.trim().isEmpty()) {
+            request.setAttribute("error_modelName", "Model Name is required.");
+            hasError = true;
+        }
+
+        double price = 0;
+        if (priceStr == null || priceStr.trim().isEmpty()) {
+            request.setAttribute("error_price", "Price is required.");
+            hasError = true;
+        } else {
+            try {
+                price = Double.parseDouble(priceStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("error_price", "Price must be a numerical value.");
+                hasError = true;
+            }
+        }
+
+        if (batteryType == null || batteryType.trim().isEmpty()) {
+            request.setAttribute("error_batteryType", "Battery Type is required.");
+            hasError = true;
+        }
+
+        if (hasError) {
+            // keep the vehicleID to reload the page safely
+            ElectricVehicle ev = new ElectricVehicle(vehicleID, modelName, priceStr != null && !priceStr.isEmpty() && !hasError ? price : 0, batteryType);
+            request.setAttribute("ev", ev);
+            request.getRequestDispatcher("EditEV.jsp").forward(request, response);
+        } else {
+            ElectricVehicle ev = new ElectricVehicle(vehicleID, modelName, price, batteryType);
+            ElectricVehicleDAO dao = new ElectricVehicleDAO();
+            dao.updateVehicle(ev);
             response.sendRedirect("EVControllerServlet?service=list");
         }
     }

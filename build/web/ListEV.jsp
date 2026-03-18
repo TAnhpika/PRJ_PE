@@ -21,6 +21,7 @@
                     <th>Model Name</th>
                     <th>Price</th>
                     <th>Battery Type</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,9 +31,17 @@
                         <td>${ev.modelName}</td>
                         <td>${ev.price}</td>
                         <td>${ev.batteryType}</td>
+                        <td>
+                            <a href="EVControllerServlet?service=edit&id=${ev.vehicleID}">Edit</a> | 
+                            <a href="EVControllerServlet?service=remove&id=${ev.vehicleID}" onclick="return confirm('Are you sure you want to remove this vehicle?');">Remove</a>
+                        </td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
+        
+        <div>
+            <strong>Total Vehicles:</strong> ${requestScope.list.size()}
+        </div>
     </body>
 </html>
